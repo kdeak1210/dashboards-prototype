@@ -40,6 +40,7 @@ submitBtn.addEventListener('click', async () => {
 
         resultText.textContent = result.prediction;
         resultContainer.classList.remove('hidden');
+        errorContainer.classList.add('hidden');
 
     } catch (error) {
         console.error('Error:', error);

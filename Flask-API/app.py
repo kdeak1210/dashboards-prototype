@@ -11,7 +11,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 # Load the trained model
-model = pickle.load(open('pickles/log_reg.pkl', 'rb'))
+model = pickle.load(open('pickles/iris_log_reg.pkl', 'rb'))
 flowers = ["Setosa", "Versicolor", "Virginica"]
 
 @app.route('/predict', methods=['POST'])
@@ -20,7 +20,6 @@ def predict():
     # Assuming input data is a dictionary matching model's features
     df = pd.DataFrame([data])
     prediction = model.predict(df)  # returns an index for the flowers list
-    print(prediction)
     index = int(prediction[0])
     return jsonify({'prediction': flowers[index]})
 
