@@ -53,12 +53,53 @@
         :has(> input[type="range"]) {
             user-select: none;
         }
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+        .sidebar-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .model-content {
+            display: none;
+        }
+        .model-content.active {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 1.25rem;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex justify-center items-center p-5">
-    <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl w-full">
-        <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Iris Flower Predictor</h1>
-        <p class="text-gray-600 text-center mb-8 text-sm">Adjust the sliders to predict the iris species</p>
+<body class="min-h-screen flex p-5">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar bg-white rounded-3xl shadow-2xl p-6 mr-5 w-64 flex-shrink-0">
+        <h2 class="text-gray-800 text-2xl font-bold mb-6">ML Models</h2>
+        <nav>
+            <a href="#" data-model="iris" class="sidebar-link active block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+                Iris Flower Predictor
+            </a>
+            <a href="#" data-model="house" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+                House Price Predictor
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex justify-center items-center">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl w-full">
+
+            <!-- Iris Model Content -->
+            <div id="iris-content" class="model-content active">
+                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Iris Flower Predictor</h1>
+                <p class="text-gray-600 text-center mb-8 text-sm">Adjust the features to predict the iris species</p>
 
         <div class="mb-8">
             <label for="petal-length" class="block text-gray-800 font-semibold mb-2.5 text-base">
@@ -111,6 +152,89 @@
                 Image source: <a href="https://bioinformatics.ccr.cancer.gov/docs/rintro/Exercises/ggplot2_part2/" target="_blank" class="text-indigo-600 hover:text-indigo-800 underline">CCR Bioinformatics</a><br>
                 Dataset: <a href="https://archive.ics.uci.edu/dataset/53/iris" target="_blank" class="text-indigo-600 hover:text-indigo-800 underline">UCI Iris Dataset</a>
             </p>
+        </div>
+            </div>
+
+            <!-- House Price Predictor Content -->
+            <div id="house-content" class="model-content">
+                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">House Price Predictor</h1>
+                <p class="text-gray-600 text-center mb-8 text-sm">Adjust the features to predict the house price</p>
+
+                <div class="mb-8">
+                    <label for="square-footage" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                        Square Footage: <span id="square-footage-value" class="text-indigo-600 font-bold">2000</span> sq ft
+                    </label>
+                    <input
+                        type="range"
+                        id="square-footage"
+                        min="500"
+                        max="5000"
+                        step="50"
+                        value="2000"
+                        class="w-full h-2 bg-gray-300 rounded-lg outline-none appearance-none cursor-pointer"
+                    >
+                </div>
+
+                <div class="mb-8">
+                    <label for="bedrooms" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                        Bedrooms: <span id="bedrooms-value" class="text-indigo-600 font-bold">3</span>
+                    </label>
+                    <input
+                        type="range"
+                        id="bedrooms"
+                        min="1"
+                        max="6"
+                        step="1"
+                        value="3"
+                        class="w-full h-2 bg-gray-300 rounded-lg outline-none appearance-none cursor-pointer"
+                    >
+                </div>
+
+                <div class="mb-8">
+                    <label for="bathrooms" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                        Bathrooms: <span id="bathrooms-value" class="text-indigo-600 font-bold">2</span>
+                    </label>
+                    <input
+                        type="range"
+                        id="bathrooms"
+                        min="1"
+                        max="5"
+                        step="0.5"
+                        value="2"
+                        class="w-full h-2 bg-gray-300 rounded-lg outline-none appearance-none cursor-pointer"
+                    >
+                </div>
+
+                <div class="mb-8">
+                    <label for="age" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                        Age of House: <span id="age-value" class="text-indigo-600 font-bold">10</span> years
+                    </label>
+                    <input
+                        type="range"
+                        id="age"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="10"
+                        class="w-full h-2 bg-gray-300 rounded-lg outline-none appearance-none cursor-pointer"
+                    >
+                </div>
+
+                <button id="house-submit-btn" class="w-full py-4 gradient-btn text-white border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                    Predict Price
+                </button>
+
+                <div id="house-result-container" class="hidden mt-8 p-2 rounded-xl bg-green-50 border-2 border-green-500 fade-in">
+                    <h2 class="text-green-800 text-xl mb-1">Predicted Price:
+                        <span id="house-result-text" class="text-green-900 text-2xl font-bold text-center"></span>
+                    </h2>
+                </div>
+
+                <div id="house-error-container" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+                    <p id="house-error-text" class="text-red-800 font-semibold text-center"></p>
+                </div>
+            </div>
+
         </div>
     </div>
 

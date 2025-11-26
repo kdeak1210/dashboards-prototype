@@ -1,3 +1,23 @@
+// Model Switching
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+const modelContents = document.querySelectorAll('.model-content');
+
+sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const modelType = link.getAttribute('data-model');
+
+        // Update active sidebar link
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        // Show selected model content
+        modelContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`${modelType}-content`).classList.add('active');
+    });
+});
+
+// Iris Model Elements
 const petalLengthSlider = document.getElementById('petal-length');
 const petalWidthSlider = document.getElementById('petal-width');
 const petalLengthValue = document.getElementById('petal-length-value');
@@ -7,6 +27,21 @@ const resultContainer = document.getElementById('result-container');
 const resultText = document.getElementById('result-text');
 const errorContainer = document.getElementById('error-container');
 const errorText = document.getElementById('error-text');
+
+// House Model Elements
+const squareFootageSlider = document.getElementById('square-footage');
+const bedroomsSlider = document.getElementById('bedrooms');
+const bathroomsSlider = document.getElementById('bathrooms');
+const ageSlider = document.getElementById('age');
+const squareFootageValue = document.getElementById('square-footage-value');
+const bedroomsValue = document.getElementById('bedrooms-value');
+const bathroomsValue = document.getElementById('bathrooms-value');
+const ageValue = document.getElementById('age-value');
+const houseSubmitBtn = document.getElementById('house-submit-btn');
+const houseResultContainer = document.getElementById('house-result-container');
+const houseResultText = document.getElementById('house-result-text');
+const houseErrorContainer = document.getElementById('house-error-container');
+const houseErrorText = document.getElementById('house-error-text');
 
 petalLengthSlider.addEventListener('input', (e) => {
     petalLengthValue.textContent = e.target.value;
@@ -49,5 +84,65 @@ submitBtn.addEventListener('click', async () => {
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Predict Species';
+    }
+});
+
+// House Price Predictor Event Listeners
+squareFootageSlider.addEventListener('input', (e) => {
+    squareFootageValue.textContent = e.target.value;
+});
+
+bedroomsSlider.addEventListener('input', (e) => {
+    bedroomsValue.textContent = e.target.value;
+});
+
+bathroomsSlider.addEventListener('input', (e) => {
+    bathroomsValue.textContent = e.target.value;
+});
+
+ageSlider.addEventListener('input', (e) => {
+    ageValue.textContent = e.target.value;
+});
+
+houseSubmitBtn.addEventListener('click', async () => {
+    const squareFootage = parseFloat(squareFootageSlider.value);
+    const bedrooms = parseFloat(bedroomsSlider.value);
+    const bathrooms = parseFloat(bathroomsSlider.value);
+    const age = parseFloat(ageSlider.value);
+
+    houseSubmitBtn.disabled = true;
+    houseSubmitBtn.textContent = 'Predicting...';
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/predict-house', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                square_footage: squareFootage,
+                bedrooms: bedrooms,
+                bathrooms: bathrooms,
+                age: age
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        houseResultText.textContent = `$${result.prediction.toLocaleString()}`;
+        houseResultContainer.classList.remove('hidden');
+        houseErrorContainer.classList.add('hidden');
+
+    } catch (error) {
+        console.error('Error:', error);
+        houseErrorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at http://127.0.0.1:5000`;
+        houseErrorContainer.classList.remove('hidden');
+    } finally {
+        houseSubmitBtn.disabled = false;
+        houseSubmitBtn.textContent = 'Predict Price';
     }
 });
