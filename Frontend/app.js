@@ -77,6 +77,9 @@ submitBtn.addEventListener('click', async () => {
         resultContainer.classList.remove('hidden');
         errorContainer.classList.add('hidden');
 
+        // Add prediction point to the chart
+        addPredictionToChart(petalLength, petalWidth, result.prediction);
+
     } catch (error) {
         console.error('Error:', error);
         errorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at http://127.0.0.1:5000`;
@@ -147,6 +150,9 @@ houseSubmitBtn.addEventListener('click', async () => {
     }
 });
 
+// Store chart instance globally to allow updates
+let irisChart = null;
+
 // Initialize Iris Petal Scatterplot with ECharts
 async function initIrisChart() {
     try {
@@ -172,7 +178,7 @@ async function initIrisChart() {
 
         // Initialize ECharts
         const chartDom = document.getElementById('iris-chart');
-        const myChart = echarts.init(chartDom);
+        irisChart = echarts.init(chartDom);
 
         const option = {
             title: {
@@ -186,11 +192,14 @@ async function initIrisChart() {
             tooltip: {
                 trigger: 'item',
                 formatter: function(params) {
+                    if (params.seriesName === 'Predicted') {
+                        return `${params.seriesName} - ${params.value[2]}</br>Petal Length: ${params.value[0]} cm<br/>Petal Width: ${params.value[1]} cm`;
+                    }
                     return `${params.seriesName}<br/>Petal Length: ${params.value[0]} cm<br/>Petal Width: ${params.value[1]} cm`;
                 }
             },
             legend: {
-                data: ['Setosa', 'Versicolor', 'Virginica'],
+                data: ['Setosa', 'Versicolor', 'Virginica', 'Predicted'],
                 bottom: 10,
                 textStyle: {
                     color: '#374151'
@@ -286,20 +295,55 @@ async function initIrisChart() {
                             borderWidth: 2
                         }
                     }
+                },
+                {
+                    name: 'Predicted',
+                    data: [],
+                    type: 'scatter',
+                    symbol: 'diamond',
+                    symbolSize: 12,
+                    itemStyle: {
+                        color: '#000000'
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            borderColor: '#374151',
+                            borderWidth: 2
+                        }
+                    }
                 }
             ]
         };
 
-        myChart.setOption(option);
+        irisChart.setOption(option);
 
         // Make chart responsive
         window.addEventListener('resize', function() {
-            myChart.resize();
+            irisChart.resize();
         });
 
     } catch (error) {
         console.error('Error loading iris chart:', error);
     }
+}
+
+// Function to add prediction point to chart
+function addPredictionToChart(petalLength, petalWidth, predictedSpecies) {
+    if (!irisChart) return;
+
+    // Update the chart with the new prediction point
+    // The prediction data includes the species name as the third element for tooltip
+    irisChart.setOption({
+        series: [
+            {}, // Setosa - keep unchanged
+            {}, // Versicolor - keep unchanged
+            {}, // Virginica - keep unchanged
+            {
+                name: 'Predicted',
+                data: [[petalLength, petalWidth, predictedSpecies]]
+            }
+        ]
+    });
 }
 
 // Initialize the chart when the page loads
