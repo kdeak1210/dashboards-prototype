@@ -1,3 +1,8 @@
+// If running index.html from local file system, use Flask's default port on localhost
+const API_BASE_URL = window.location.protocol === 'file:' 
+  ? 'http://localhost:5000'
+  : 'https://TBD';
+
 // Model Switching
 const sidebarLinks = document.querySelectorAll('.sidebar-link');
 const modelContents = document.querySelectorAll('.model-content');
@@ -59,7 +64,7 @@ submitBtn.addEventListener('click', async () => {
     submitBtn.textContent = 'Predicting...';
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/predict-iris', {
+        const response = await fetch(`${API_BASE_URL}/predict-iris`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -117,7 +122,7 @@ houseSubmitBtn.addEventListener('click', async () => {
     houseSubmitBtn.textContent = 'Predicting...';
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/predict-house', {
+        const response = await fetch(`${API_BASE_URL}/predict-house`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -301,7 +306,7 @@ async function initIrisChart() {
                     data: [],
                     type: 'scatter',
                     symbol: 'diamond',
-                    symbolSize: 12,
+                    symbolSize: 16,
                     itemStyle: {
                         color: '#000000'
                     },
