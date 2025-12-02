@@ -43,6 +43,7 @@ house_model = pickle.load(open('pickles/house_price_lin_reg.pkl', 'rb'))
 @app.route('/predict-house', methods=['POST'])
 def predict_house():
     data = request.get_json(force=True)
+    df = pd.DataFrame([data])
     prediction = house_model.predict(df)[0]
     return jsonify({'prediction': prediction})
 

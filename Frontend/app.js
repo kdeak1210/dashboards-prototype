@@ -34,14 +34,14 @@ const errorContainer = document.getElementById('error-container');
 const errorText = document.getElementById('error-text');
 
 // House Model Elements
-const squareFootageSlider = document.getElementById('square-footage');
-const bedroomsSlider = document.getElementById('bedrooms');
-const bathroomsSlider = document.getElementById('bathrooms');
-const ageSlider = document.getElementById('age');
-const squareFootageValue = document.getElementById('square-footage-value');
+const bedroomsSelect = document.getElementById('bedrooms');
+const bathroomsSelect = document.getElementById('bathrooms');
+const lotsizeInput = document.getElementById('lotsize');
+const waterfrontCheckbox = document.getElementById('waterfront');
 const bedroomsValue = document.getElementById('bedrooms-value');
 const bathroomsValue = document.getElementById('bathrooms-value');
-const ageValue = document.getElementById('age-value');
+const lotsizeValue = document.getElementById('lotsize-value');
+const lotsizeError = document.getElementById('lotsize-error');
 const houseSubmitBtn = document.getElementById('house-submit-btn');
 const houseResultContainer = document.getElementById('house-result-container');
 const houseResultText = document.getElementById('house-result-text');
@@ -96,27 +96,42 @@ submitBtn.addEventListener('click', async () => {
 });
 
 // House Price Predictor Event Listeners
-squareFootageSlider.addEventListener('input', (e) => {
-    squareFootageValue.textContent = e.target.value;
-});
-
-bedroomsSlider.addEventListener('input', (e) => {
+bedroomsSelect.addEventListener('change', (e) => {
     bedroomsValue.textContent = e.target.value;
 });
 
-bathroomsSlider.addEventListener('input', (e) => {
+bathroomsSelect.addEventListener('change', (e) => {
     bathroomsValue.textContent = e.target.value;
 });
 
-ageSlider.addEventListener('input', (e) => {
-    ageValue.textContent = e.target.value;
+// Validation function for lot size
+function validateLotSize(value) {
+    const lotsize = parseFloat(value);
+    return lotsize >= 1000 && lotsize <= 20000;
+}
+
+lotsizeInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    lotsizeValue.textContent = value;
+
+    // Validate lot size
+    const isValid = validateLotSize(value);
+
+    // Show/hide error message
+    if (!isValid && value !== '') {
+        lotsizeError.classList.remove('hidden');
+        houseSubmitBtn.disabled = true;
+    } else {
+        lotsizeError.classList.add('hidden');
+        houseSubmitBtn.disabled = false;
+    }
 });
 
 houseSubmitBtn.addEventListener('click', async () => {
-    const squareFootage = parseFloat(squareFootageSlider.value);
-    const bedrooms = parseFloat(bedroomsSlider.value);
-    const bathrooms = parseFloat(bathroomsSlider.value);
-    const age = parseFloat(ageSlider.value);
+    const bedrooms = parseFloat(bedroomsSelect.value);
+    const bathrooms = parseFloat(bathroomsSelect.value);
+    const lotsize = parseFloat(lotsizeInput.value);
+    const waterfront = waterfrontCheckbox.checked ? 1 : 0;
 
     houseSubmitBtn.disabled = true;
     houseSubmitBtn.textContent = 'Predicting...';
@@ -127,12 +142,7 @@ houseSubmitBtn.addEventListener('click', async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                square_footage: squareFootage,
-                bedrooms: bedrooms,
-                bathrooms: bathrooms,
-                age: age
-            })
+            body: JSON.stringify([bedrooms, bathrooms, lotsize, waterfront])
         });
 
         if (!response.ok) {
@@ -141,7 +151,7 @@ houseSubmitBtn.addEventListener('click', async () => {
 
         const result = await response.json();
 
-        houseResultText.textContent = `$${result.prediction.toLocaleString()}`;
+        houseResultText.textContent = `$${Math.round(result.prediction).toLocaleString()}`;
         houseResultContainer.classList.remove('hidden');
         houseErrorContainer.classList.add('hidden');
 
