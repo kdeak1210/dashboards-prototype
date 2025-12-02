@@ -87,7 +87,7 @@ submitBtn.addEventListener('click', async () => {
 
     } catch (error) {
         console.error('Error:', error);
-        errorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at http://127.0.0.1:5000`;
+        errorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at ${API_BASE_URL}`;
         errorContainer.classList.remove('hidden');
     } finally {
         submitBtn.disabled = false;
@@ -147,7 +147,7 @@ houseSubmitBtn.addEventListener('click', async () => {
 
     } catch (error) {
         console.error('Error:', error);
-        houseErrorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at http://127.0.0.1:5000`;
+        houseErrorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at ${API_BASE_URL}`;
         houseErrorContainer.classList.remove('hidden');
     } finally {
         houseSubmitBtn.disabled = false;
@@ -162,7 +162,7 @@ let irisChart = null;
 async function initIrisChart() {
     try {
         // Fetch iris dataset
-        const response = await fetch('http://127.0.0.1:5000/iris-data');
+        const response = await fetch(`${API_BASE_URL}/iris-data`);
         const irisData = await response.json();
 
         // Group data by species
