@@ -36,12 +36,37 @@ def get_iris_data():
         return iris_json
 
 # House Price Section
+# house_model = pickle.load(open('pickles/house_price_random_forest.pkl', 'rb'))
+house_model = pickle.load(open('pickles/house_price_lin_reg.pkl', 'rb'))
+
 # API call to handle house price prediction requests
 @app.route('/predict-house', methods=['POST'])
 def predict_house():
-    return jsonify({'prediction': 'TEST!'})
+    data = request.get_json(force=True)
+    prediction = house_model.predict(df)[0]
+    return jsonify({'prediction': prediction})
 
+# Reference for the house price model prediction function
+# def predict_house_price(bedrooms, bathrooms, sqft_lot, waterfront):
+#     """
+#     Predict house price based on input features.
 
+#     Parameters:
+#     -----------
+#     bedrooms : int
+#         Number of bedrooms
+#     bathrooms : float
+#         Number of bathrooms
+#     sqft_lot : int
+#         Square footage of the lot
+#     waterfront : int
+#         Waterfront property (0 = No, 1 = Yes)
+
+#     Returns:
+#     --------
+#     float
+#         Predicted house price
+#     """
 
 if __name__ == '__main__':
     app.run(debug=True)
