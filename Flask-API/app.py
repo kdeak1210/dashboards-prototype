@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pickle
+import joblib
 import json
 import os
 import pandas as pd # Example for data handling
@@ -17,7 +18,7 @@ def hello_world():
 
 # Iris Section
 # Load the trained model using absolute path
-iris_model_path = os.path.join(BASE_DIR, 'pickles', 'iris_log_reg.pkl')
+iris_model_path = os.path.join(BASE_DIR, 'models/iris_prediction', 'iris_log_reg.pkl')
 iris_model = pickle.load(open(iris_model_path, 'rb'))
 iris_species = ["Setosa", "Versicolor", "Virginica"]
 
@@ -30,7 +31,6 @@ def predict_iris():
     prediction = iris_model.predict(df)  # returns an index for the iris_species list
     index = int(prediction[0])
     return jsonify({'prediction': iris_species[index]})
-
     # return jsonify({'prediction': prediction.tolist()})
 
 # API call to fetch Iris dataset in JSON format
@@ -43,7 +43,7 @@ def get_iris_data():
 
 # House Price Section
 # house_model = pickle.load(open('pickles/house_price_random_forest.pkl', 'rb'))
-house_model_path = os.path.join(BASE_DIR, 'pickles', 'house_price_lin_reg.pkl')
+house_model_path = os.path.join(BASE_DIR, 'models/house_price', 'house_price_lin_reg.pkl')
 house_model = pickle.load(open(house_model_path, 'rb'))
 
 # API call to handle house price prediction requests
@@ -75,6 +75,68 @@ def predict_house():
 #     float
 #         Predicted house price
 #     """
+
+# Air Force Retention Section
+# Load model artifacts
+retention_model_path = os.path.join(BASE_DIR, 'models/airforce_retention', 'airforce_retention_model.pkl')
+retention_scaler_path = os.path.join(BASE_DIR, 'models/airforce_retention', 'airforce_retention_scaler.pkl')
+retention_encoders_path = os.path.join(BASE_DIR, 'models/airforce_retention', 'airforce_retention_encoders.pkl')
+retention_feature_info_path = os.path.join(BASE_DIR, 'models/airforce_retention', 'airforce_retention_feature_info.pkl')
+
+retention_model = joblib.load(retention_model_path)
+retention_scaler = joblib.load(retention_scaler_path)
+retention_encoders = joblib.load(retention_encoders_path)
+retention_feature_info = joblib.load(retention_feature_info_path)
+
+# retention_model = pickle.load(open(retention_model_path, 'rb'))
+# retention_scaler = pickle.load(open(retention_scaler_path, 'rb'))
+# retention_encoders = pickle.load(open(retention_encoders_path, 'rb'))
+# retention_feature_info = pickle.load(open(retention_feature_info_path, 'rb'))
+
+# Prepare input data
+# airman_data = {
+#     'age': 28,
+#     'gender': 'Male',
+#     'marital_status': 'Married',
+#     'num_dependents': 2,
+#     'grade_rank': 'E-6 (TSgt)',
+#     'salary': 47000,
+#     'years_of_service': 10,
+#     'num_prior_reenlistments': 2,
+#     'bonuses_received': 10000
+# }
+
+# API call to handle Air Force retention prediction requests
+@app.route('/predict-retention', methods=['POST'])
+def predict_retention():
+    data = request.get_json(force=True)
+
+    # Create DataFrame
+    # df = pd.DataFrame([airman_data])
+    df = pd.DataFrame([data])
+
+    # Encode categorical variables
+    for col in ['gender', 'marital_status', 'grade_rank']:
+        df[col + '_encoded'] = retention_encoders[col].transform(df[col])
+
+    # Extract rank level
+    df['rank_level'] = df['grade_rank'].str.extract(r'E-(\d+)').astype(int)
+
+    # Select features
+    features = df[retention_feature_info['feature_columns']]
+
+    # Scale features (Logistic Regression requires scaling)
+    features_scaled = retention_scaler.transform(features)
+
+    # Make prediction
+    prediction = retention_model.predict(features_scaled)[0]
+    probabilities = retention_model.predict_proba(features_scaled)[0]
+
+    return jsonify({
+        'retained': bool(prediction),
+        'retention_probability': probabilities[1],
+        'non_retention_probability': probabilities[0]
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
