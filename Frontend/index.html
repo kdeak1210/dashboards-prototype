@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iris Flower Predictor</title>
+    <title>Prediction Dashboard</title>
     <script src="lib/tailwindcss.js"></script>
     <script src="lib/echarts.min.js"></script>
     <style>
@@ -84,7 +84,10 @@
     <div class="sidebar bg-white rounded-3xl shadow-2xl p-6 mr-5 w-64 flex-shrink-0">
         <h2 class="text-gray-800 text-2xl font-bold mb-6">ML Models</h2>
         <nav>
-            <a href="#" data-model="iris" class="sidebar-link active block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+            <a href="#" data-model="retention" class="sidebar-link active block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+                Air Force Retention
+            </a>
+            <a href="#" data-model="iris" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
                 Iris Flower Predictor
             </a>
             <a href="#" data-model="house" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
@@ -97,8 +100,164 @@
     <div class="flex-1 flex justify-center items-center">
         <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl w-full">
 
+            <!-- Air Force Retention Content -->
+            <div id="retention-content" class="model-content active">
+                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Air Force Retention Predictor</h1>
+                <p class="text-gray-600 text-center mb-8 text-sm">Enter airman details to predict retention probability</p>
+
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div>
+                        <label for="age" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Age: <span id="age-value" class="text-indigo-600 font-bold">30</span>
+                        </label>
+                        <select
+                            id="age"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                        >
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="gender" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Gender: <span id="gender-value" class="text-indigo-600 font-bold">Male</span>
+                        </label>
+                        <select
+                            id="gender"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                        >
+                            <option value="Male" selected>Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="marital-status" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Marital Status: <span id="marital-status-value" class="text-indigo-600 font-bold">Single</span>
+                        </label>
+                        <select
+                            id="marital-status"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                        >
+                            <option value="Single" selected>Single</option>
+                            <option value="Married">Married</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="dependents" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Dependents: <span id="dependents-value" class="text-indigo-600 font-bold">2</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <button id="dependents-minus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">-</button>
+                            <input
+                                type="text"
+                                id="dependents-display"
+                                value="2"
+                                readonly
+                                class="flex-1 p-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-center font-semibold"
+                            >
+                            <button id="dependents-plus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">+</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="grade" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Grade/Rank: <span id="grade-value" class="text-indigo-600 font-bold">E-4 (SrA)</span>
+                        </label>
+                        <select
+                            id="grade"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                        >
+                            <option value="E-1 (AB)">E-1 (AB)</option>
+                            <option value="E-2 (Amn)">E-2 (Amn)</option>
+                            <option value="E-3 (A1C)">E-3 (A1C)</option>
+                            <option value="E-4 (SrA)" selected>E-4 (SrA)</option>
+                            <option value="E-5 (SSgt)">E-5 (SSgt)</option>
+                            <option value="E-6 (TSgt)">E-6 (TSgt)</option>
+                            <option value="E-7 (MSgt)">E-7 (MSgt)</option>
+                            <option value="E-8 (SMSgt)">E-8 (SMSgt)</option>
+                            <option value="E-9 (CMSgt)">E-9 (CMSgt)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="salary" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Salary: $<span id="salary-value" class="text-indigo-600 font-bold">50000</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="salary"
+                            min="0"
+                            max="150000"
+                            step="1000"
+                            value="50000"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none focus:border-indigo-500 transition-colors"
+                        >
+                        <p id="salary-error" class="hidden text-red-600 text-sm mt-1 font-semibold">Salary must be between $0 and $150,000</p>
+                    </div>
+
+                    <div>
+                        <label for="years-service" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Years of Service: <span id="years-service-value" class="text-indigo-600 font-bold">6</span>
+                        </label>
+                        <select
+                            id="years-service"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                        >
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="prior-reenlistments" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Prior Reenlistments: <span id="prior-reenlistments-value" class="text-indigo-600 font-bold">1</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <button id="prior-reenlistments-minus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">-</button>
+                            <input
+                                type="text"
+                                id="prior-reenlistments-display"
+                                value="1"
+                                readonly
+                                class="flex-1 p-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-center font-semibold"
+                            >
+                            <button id="prior-reenlistments-plus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">+</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="bonuses" class="block text-gray-800 font-semibold mb-2.5 text-base">
+                            Bonuses Received: $<span id="bonuses-value" class="text-indigo-600 font-bold">10000</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="bonuses"
+                            min="0"
+                            max="50000"
+                            step="1000"
+                            value="10000"
+                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none focus:border-indigo-500 transition-colors"
+                        >
+                        <p id="bonuses-error" class="hidden text-red-600 text-sm mt-1 font-semibold">Bonuses must be between $0 and $50,000</p>
+                    </div>
+                </div>
+
+                <button id="retention-submit-btn" class="w-full py-4 gradient-btn text-white border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                    Predict Retention
+                </button>
+
+                <div id="retention-result-container" class="hidden mt-8 p-2 rounded-xl bg-green-50 border-2 border-green-500 fade-in">
+                    <h2 class="text-green-800 text-xl mb-1">Retention Probability:
+                        <span id="retention-result-text" class="text-green-900 text-2xl font-bold text-center"></span>
+                    </h2>
+                </div>
+
+                <div id="retention-error-container" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+                    <p id="retention-error-text" class="text-red-800 font-semibold text-center"></p>
+                </div>
+            </div>
+
             <!-- Iris Model Content -->
-            <div id="iris-content" class="model-content active">
+            <div id="iris-content" class="model-content">
                 <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Iris Flower Predictor</h1>
                 <p class="text-gray-600 text-center mb-8 text-sm">Adjust the features to predict the iris species</p>
 
