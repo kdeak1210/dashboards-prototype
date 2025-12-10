@@ -1,7 +1,7 @@
 // If running index.html from local file system, use Flask's default port on localhost
-const API_BASE_URL = window.location.protocol === 'file:' 
+const API_BASE_URL = window.location.protocol === 'file:'
   ? 'http://localhost:5000'
-  : 'https://TBD';
+  : 'https://kdeak1210.pythonanywhere.com';
 
 // Model Switching
 const sidebarLinks = document.querySelectorAll('.sidebar-link');

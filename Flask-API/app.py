@@ -2,7 +2,11 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pickle
 import json
+import os
 import pandas as pd # Example for data handling
+
+# Get the absolute path of the current file's directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 CORS(app)
@@ -12,8 +16,9 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 # Iris Section
-# Load the trained model
-iris_model = pickle.load(open('pickles/iris_log_reg.pkl', 'rb'))
+# Load the trained model using absolute path
+iris_model_path = os.path.join(BASE_DIR, 'pickles', 'iris_log_reg.pkl')
+iris_model = pickle.load(open(iris_model_path, 'rb'))
 iris_species = ["Setosa", "Versicolor", "Virginica"]
 
 # API call to handle Iris model requests
@@ -31,13 +36,15 @@ def predict_iris():
 # API call to fetch Iris dataset in JSON format
 @app.route('/iris-data', methods=['GET'])
 def get_iris_data():
-    with open('datasets/iris.json') as iris_data:
+    iris_data_path = os.path.join(BASE_DIR, 'datasets', 'iris.json')
+    with open(iris_data_path) as iris_data:
         iris_json = json.load(iris_data)
         return iris_json
 
 # House Price Section
 # house_model = pickle.load(open('pickles/house_price_random_forest.pkl', 'rb'))
-house_model = pickle.load(open('pickles/house_price_lin_reg.pkl', 'rb'))
+house_model_path = os.path.join(BASE_DIR, 'pickles', 'house_price_lin_reg.pkl')
+house_model = pickle.load(open(house_model_path, 'rb'))
 
 # API call to handle house price prediction requests
 @app.route('/predict-house', methods=['POST'])
