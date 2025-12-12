@@ -7,58 +7,35 @@
     <script src="lib/tailwindcss.js"></script>
     <script src="lib/echarts.min.js"></script>
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .gradient-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 20px;
             height: 20px;
-            background: #667eea;
+            background: #1e40af;
             border-radius: 50%;
             cursor: pointer;
         }
         input[type="range"]::-webkit-slider-thumb:hover {
-            background: #764ba2;
+            background: #1e3a8a;
         }
         input[type="range"]::-moz-range-thumb {
             width: 20px;
             height: 20px;
-            background: #667eea;
+            background: #1e40af;
             border-radius: 50%;
             cursor: pointer;
             border: none;
         }
         input[type="range"]::-moz-range-thumb:hover {
-            background: #764ba2;
+            background: #1e3a8a;
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-
         /** Prevent user 'text selection' with cursor on sliders - fixes disabled bug */
         :has(> input[type="range"]) {
             user-select: none;
         }
-        .sidebar-link {
-            transition: all 0.3s ease;
-        }
         .sidebar-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1e40af;
             color: white;
         }
         .model-content {
@@ -67,47 +44,32 @@
         .model-content.active {
             display: block;
         }
-        #airman-data-table {
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
         #airman-data-table th {
             position: sticky;
             top: 0;
             z-index: 10;
         }
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 1.25rem;
-            }
-        }
     </style>
 </head>
-<body class="min-h-screen flex p-5">
+<body class="min-h-screen flex p-5 bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50">
     <!-- Sidebar Navigation -->
-    <div class="sidebar bg-white rounded-3xl shadow-2xl p-6 mr-5 w-64 flex-shrink-0">
-        <h2 class="text-gray-800 text-2xl font-bold mb-6">ML Models</h2>
+    <div class="sidebar bg-white rounded-lg shadow-lg p-6 mr-5 w-64 flex-shrink-0 border border-slate-200">
+        <h2 class="text-slate-800 text-xl font-bold mb-6 pb-3 border-b-2 border-blue-800">ML Models</h2>
         <nav>
-            <a href="#" data-model="retention" class="sidebar-link active block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+            <a href="#" data-model="retention" class="sidebar-link active block p-3 mb-2 rounded-md font-medium hover:bg-slate-100 transition-all text-slate-700">
                 Air Force Retention
             </a>
-            <a href="#" data-model="iris" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
-                Iris Flower Predictor
+            <a href="#" data-model="iris" class="sidebar-link block p-3 mb-2 rounded-md font-medium hover:bg-slate-100 transition-all text-slate-700">
+                Iris Flower Classifier
             </a>
-            <a href="#" data-model="house" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+            <a href="#" data-model="house" class="sidebar-link block p-3 mb-2 rounded-md font-medium hover:bg-slate-100 transition-all text-slate-700">
                 House Price Predictor
             </a>
         </nav>
 
-        <h2 class="text-gray-800 text-2xl font-bold mb-6 mt-8">Envision Datasets</h2>
+        <h2 class="text-slate-800 text-xl font-bold mb-6 pb-3 mt-8 border-b-2 border-blue-800">Envision Datasets</h2>
         <nav>
-            <a href="#" data-model="airman-data" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+            <a href="#" data-model="airman-data" class="sidebar-link block p-3 mb-2 rounded-md font-medium hover:bg-slate-100 transition-all text-slate-700">
                 Airman Data Test
             </a>
         </nav>
@@ -115,32 +77,32 @@
 
     <!-- Main Content Area -->
     <div class="flex-1 flex justify-center items-start overflow-y-auto">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full my-auto">
+        <div class="bg-white p-10 rounded-lg shadow-lg max-w-4xl w-full my-auto border border-slate-200">
 
             <!-- Air Force Retention Content -->
             <div id="retention-content" class="model-content active">
-                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Air Force Retention Predictor</h1>
-                <p class="text-gray-600 text-center mb-8 text-sm">Enter airman details to predict retention probability</p>
+                <h1 class="text-slate-900 text-center mb-2.5 text-3xl md:text-4xl font-bold">Air Force Retention Predictor</h1>
+                <p class="text-slate-600 text-center mb-8 text-sm">Enter airman details to predict retention probability</p>
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <div>
-                        <label for="age" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Age: <span id="age-value" class="text-indigo-600 font-bold">30</span>
+                        <label for="age" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Age: <span id="age-value" class="text-blue-800 font-bold">30</span>
                         </label>
                         <select
                             id="age"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                         </select>
                     </div>
 
                     <div>
-                        <label for="gender" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Gender: <span id="gender-value" class="text-indigo-600 font-bold">Male</span>
+                        <label for="gender" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Gender: <span id="gender-value" class="text-blue-800 font-bold">Male</span>
                         </label>
                         <select
                             id="gender"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                             <option value="Male" selected>Male</option>
                             <option value="Female">Female</option>
@@ -148,12 +110,12 @@
                     </div>
 
                     <div>
-                        <label for="marital-status" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Marital Status: <span id="marital-status-value" class="text-indigo-600 font-bold">Single</span>
+                        <label for="marital-status" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Marital Status: <span id="marital-status-value" class="text-blue-800 font-bold">Single</span>
                         </label>
                         <select
                             id="marital-status"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                             <option value="Single" selected>Single</option>
                             <option value="Married">Married</option>
@@ -161,29 +123,29 @@
                     </div>
 
                     <div>
-                        <label for="dependents" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Dependents: <span id="dependents-value" class="text-indigo-600 font-bold">2</span>
+                        <label for="dependents" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Dependents: <span id="dependents-value" class="text-blue-800 font-bold">2</span>
                         </label>
                         <div class="flex items-center gap-2">
-                            <button id="dependents-minus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">-</button>
+                            <button id="dependents-minus" class="w-10 h-10 bg-slate-200 hover:bg-slate-300 rounded-md font-bold text-slate-800 transition-colors">-</button>
                             <input
                                 type="text"
                                 id="dependents-display"
                                 value="2"
                                 readonly
-                                class="flex-1 p-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-center font-semibold"
+                                class="flex-1 p-3 bg-slate-50 border border-slate-300 rounded-md text-center font-semibold"
                             >
-                            <button id="dependents-plus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">+</button>
+                            <button id="dependents-plus" class="w-10 h-10 bg-slate-200 hover:bg-slate-300 rounded-md font-bold text-slate-800 transition-colors">+</button>
                         </div>
                     </div>
 
                     <div>
-                        <label for="grade" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Grade/Rank: <span id="grade-value" class="text-indigo-600 font-bold">E-4 (SrA)</span>
+                        <label for="grade" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Grade/Rank: <span id="grade-value" class="text-blue-800 font-bold">E-4 (SrA)</span>
                         </label>
                         <select
                             id="grade"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                             <option value="E-1 (AB)">E-1 (AB)</option>
                             <option value="E-2 (Amn)">E-2 (Amn)</option>
@@ -198,8 +160,8 @@
                     </div>
 
                     <div>
-                        <label for="salary" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Salary: $<span id="salary-value" class="text-indigo-600 font-bold">50000</span>
+                        <label for="salary" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Salary: $<span id="salary-value" class="text-blue-800 font-bold">50000</span>
                         </label>
                         <input
                             type="number"
@@ -208,42 +170,42 @@
                             max="150000"
                             step="1000"
                             value="50000"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                         <p id="salary-error" class="hidden text-red-600 text-sm mt-1 font-semibold">Salary must be between $0 and $150,000</p>
                     </div>
 
                     <div>
-                        <label for="years-service" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Years of Service: <span id="years-service-value" class="text-indigo-600 font-bold">6</span>
+                        <label for="years-service" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Years of Service: <span id="years-service-value" class="text-blue-800 font-bold">6</span>
                         </label>
                         <select
                             id="years-service"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                         </select>
                     </div>
 
                     <div>
-                        <label for="prior-reenlistments" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Prior Reenlistments: <span id="prior-reenlistments-value" class="text-indigo-600 font-bold">1</span>
+                        <label for="prior-reenlistments" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Prior Reenlistments: <span id="prior-reenlistments-value" class="text-blue-800 font-bold">1</span>
                         </label>
                         <div class="flex items-center gap-2">
-                            <button id="prior-reenlistments-minus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">-</button>
+                            <button id="prior-reenlistments-minus" class="w-10 h-10 bg-slate-200 hover:bg-slate-300 rounded-md font-bold text-slate-800 transition-colors">-</button>
                             <input
                                 type="text"
                                 id="prior-reenlistments-display"
                                 value="1"
                                 readonly
-                                class="flex-1 p-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-center font-semibold"
+                                class="flex-1 p-3 bg-slate-50 border border-slate-300 rounded-md text-center font-semibold"
                             >
-                            <button id="prior-reenlistments-plus" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-800 transition-colors">+</button>
+                            <button id="prior-reenlistments-plus" class="w-10 h-10 bg-slate-200 hover:bg-slate-300 rounded-md font-bold text-slate-800 transition-colors">+</button>
                         </div>
                     </div>
 
                     <div>
-                        <label for="bonuses" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Bonuses Received: $<span id="bonuses-value" class="text-indigo-600 font-bold">10000</span>
+                        <label for="bonuses" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Bonuses Received: $<span id="bonuses-value" class="text-blue-800 font-bold">10000</span>
                         </label>
                         <input
                             type="number"
@@ -252,35 +214,35 @@
                             max="50000"
                             step="1000"
                             value="10000"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                         <p id="bonuses-error" class="hidden text-red-600 text-sm mt-1 font-semibold">Bonuses must be between $0 and $50,000</p>
                     </div>
                 </div>
 
-                <button id="retention-submit-btn" class="w-full py-4 gradient-btn text-white border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                <button id="retention-submit-btn" class="w-full py-4 bg-blue-800 hover:bg-blue-900 text-white border-none rounded-md text-lg font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
                     Predict Retention
                 </button>
 
-                <div id="retention-result-container" class="hidden mt-8 p-2 rounded-xl bg-green-50 border-2 border-green-500 fade-in">
+                <div id="retention-result-container" class="hidden mt-8 p-4 rounded-md bg-green-50 border-l-4 border-green-600 animate-fade-in">
                     <h2 class="text-green-800 text-xl mb-1">Retention Probability:
                         <span id="retention-result-text" class="text-green-900 text-2xl font-bold text-center"></span>
                     </h2>
                 </div>
 
-                <div id="retention-error-container" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+                <div id="retention-error-container" class="hidden mt-5 p-4 rounded-md bg-red-50 border-l-4 border-red-600 animate-fade-in">
                     <p id="retention-error-text" class="text-red-800 font-semibold text-center"></p>
                 </div>
             </div>
 
             <!-- Iris Model Content -->
             <div id="iris-content" class="model-content">
-                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Iris Flower Predictor</h1>
-                <p class="text-gray-600 text-center mb-8 text-sm">Adjust the features to predict the iris species</p>
+                <h1 class="text-slate-900 text-center mb-2.5 text-3xl md:text-4xl font-bold">Iris Flower Predictor</h1>
+                <p class="text-slate-600 text-center mb-8 text-sm">Adjust the features to predict the iris species</p>
 
         <div class="mb-8">
-            <label for="petal-length" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                Petal Length: <span id="petal-length-value" class="text-indigo-600 font-bold">4.0</span> cm
+            <label for="petal-length" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                Petal Length: <span id="petal-length-value" class="text-blue-800 font-bold">4.0</span> cm
             </label>
             <input
                 type="range"
@@ -289,13 +251,13 @@
                 max="7.0"
                 step="0.1"
                 value="4.0"
-                class="w-full h-2 bg-gray-300 rounded-lg outline-none appearance-none cursor-pointer"
+                class="w-full h-2 bg-slate-300 rounded-lg outline-none appearance-none cursor-pointer"
             >
         </div>
 
         <div class="mb-8">
-            <label for="petal-width" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                Petal Width: <span id="petal-width-value" class="text-indigo-600 font-bold">1.3</span> cm
+            <label for="petal-width" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                Petal Width: <span id="petal-width-value" class="text-blue-800 font-bold">1.3</span> cm
             </label>
             <input
                 type="range"
@@ -304,45 +266,45 @@
                 max="2.5"
                 step="0.1"
                 value="1.3"
-                class="w-full h-2 bg-gray-300 rounded-lg outline-none appearance-none cursor-pointer"
+                class="w-full h-2 bg-slate-300 rounded-lg outline-none appearance-none cursor-pointer"
             >
         </div>
 
-        <button id="submit-btn" class="w-full py-4 gradient-btn text-white border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+        <button id="submit-btn" class="w-full py-4 bg-blue-800 hover:bg-blue-900 text-white border-none rounded-md text-lg font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
             Predict Species
         </button>
 
-        <div id="result-container" class="hidden mt-8 p-2 rounded-xl bg-green-50 border-2 border-green-500 fade-in">
+        <div id="result-container" class="hidden mt-8 p-4 rounded-md bg-green-50 border-l-4 border-green-600 animate-fade-in">
             <h2 class="text-green-800 text-xl mb-1">Prediction Result:
                 <span id="result-text" class="text-green-900 text-2xl font-bold text-center"></span>
             </h2>
         </div>
 
-        <div id="error-container" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+        <div id="error-container" class="hidden mt-5 p-4 rounded-md bg-red-50 border-l-4 border-red-600 animate-fade-in">
             <p id="error-text" class="text-red-800 font-semibold text-center"></p>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-gray-200">
+        <div class="mt-8 pt-6 border-t border-slate-200">
             <div id="iris-chart" class="w-full rounded-lg" style="height: 400px;"></div>
-            <p class="text-gray-600 text-sm mt-3 text-center">
-                Dataset: <a href="https://archive.ics.uci.edu/dataset/53/iris" target="_blank" class="text-indigo-600 hover:text-indigo-800 underline">UCI Iris Dataset</a>
+            <p class="text-slate-600 text-sm mt-3 text-center">
+                Dataset: <a href="https://archive.ics.uci.edu/dataset/53/iris" target="_blank" class="text-blue-700 hover:text-blue-900 underline">UCI Iris Dataset</a>
             </p>
         </div>
             </div>
 
             <!-- House Price Predictor Content -->
             <div id="house-content" class="model-content">
-                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">House Price Predictor</h1>
-                <p class="text-gray-600 text-center mb-8 text-sm">Adjust the features to predict the house price</p>
+                <h1 class="text-slate-900 text-center mb-2.5 text-3xl md:text-4xl font-bold">House Price Predictor</h1>
+                <p class="text-slate-600 text-center mb-8 text-sm">Adjust the features to predict the house price</p>
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <div>
-                        <label for="bedrooms" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Bedrooms: <span id="bedrooms-value" class="text-indigo-600 font-bold">3</span>
+                        <label for="bedrooms" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Bedrooms: <span id="bedrooms-value" class="text-blue-800 font-bold">3</span>
                         </label>
                         <select
                             id="bedrooms"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -354,12 +316,12 @@
                     </div>
 
                     <div>
-                        <label for="bathrooms" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Bathrooms: <span id="bathrooms-value" class="text-indigo-600 font-bold">1.5</span>
+                        <label for="bathrooms" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Bathrooms: <span id="bathrooms-value" class="text-blue-800 font-bold">1.5</span>
                         </label>
                         <select
                             id="bathrooms"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none cursor-pointer focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none cursor-pointer focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                             <option value="1">1</option>
                             <option value="1.5" selected>1.5</option>
@@ -374,8 +336,8 @@
                     </div>
 
                     <div>
-                        <label for="lotsize" class="block text-gray-800 font-semibold mb-2.5 text-base">
-                            Lot Size: <span id="lotsize-value" class="text-indigo-600 font-bold">3000</span> sq ft
+                        <label for="lotsize" class="block text-slate-700 font-semibold mb-2.5 text-sm">
+                            Lot Size: <span id="lotsize-value" class="text-blue-800 font-bold">3000</span> sq ft
                         </label>
                         <input
                             type="number"
@@ -384,7 +346,7 @@
                             max="20000"
                             step="1"
                             value="3000"
-                            class="w-full p-3 bg-white border-2 border-gray-300 rounded-lg outline-none focus:border-indigo-500 transition-colors"
+                            class="w-full p-3 bg-white border border-slate-300 rounded-md outline-none focus:border-blue-800 focus:ring-1 focus:ring-blue-800 transition-colors"
                         >
                         <p id="lotsize-error" class="hidden text-red-600 text-sm mt-1 font-semibold">Lot size must be between 1,000 and 20,000 sq ft</p>
                     </div>
@@ -394,30 +356,30 @@
                             <input
                                 type="checkbox"
                                 id="waterfront"
-                                class="w-5 h-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                                class="w-5 h-5 text-blue-800 border border-slate-300 rounded focus:ring-2 focus:ring-blue-800 cursor-pointer"
                             >
-                            <span class="ml-3 text-gray-800 font-semibold text-base">Waterfront Property</span>
+                            <span class="ml-3 text-slate-700 font-semibold text-sm">Waterfront Property</span>
                         </label>
                     </div>
                 </div>
 
-                <button id="house-submit-btn" class="w-full py-4 gradient-btn text-white border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                <button id="house-submit-btn" class="w-full py-4 bg-blue-800 hover:bg-blue-900 text-white border-none rounded-md text-lg font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
                     Predict Price
                 </button>
 
-                <div id="house-result-container" class="hidden mt-8 p-2 rounded-xl bg-green-50 border-2 border-green-500 fade-in">
+                <div id="house-result-container" class="hidden mt-8 p-4 rounded-md bg-green-50 border-l-4 border-green-600 animate-fade-in">
                     <h2 class="text-green-800 text-xl mb-1">Predicted Price:
                         <span id="house-result-text" class="text-green-900 text-2xl font-bold text-center"></span>
                     </h2>
                 </div>
 
-                <div id="house-error-container" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+                <div id="house-error-container" class="hidden mt-5 p-4 rounded-md bg-red-50 border-l-4 border-red-600 animate-fade-in">
                     <p id="house-error-text" class="text-red-800 font-semibold text-center"></p>
                 </div>
 
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <p class="text-gray-600 text-sm text-center">
-                        Dataset: <a href="https://www.kaggle.com/datasets/harlfoxem/housesalesprediction/data" target="_blank" class="text-indigo-600 hover:text-indigo-800 underline">
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                    <p class="text-slate-600 text-sm text-center">
+                        Dataset: <a href="https://www.kaggle.com/datasets/harlfoxem/housesalesprediction/data" target="_blank" class="text-blue-700 hover:text-blue-900 underline">
                             House Sales in King County, WA 2014
                         </a>
                     </p>
@@ -426,21 +388,21 @@
 
             <!-- Airman Data Test Content -->
             <div id="airman-data-content" class="model-content">
-                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Airman Data Test</h1>
-                <p class="text-gray-600 text-center mb-8 text-sm">Envision test data</p>
+                <h1 class="text-slate-900 text-center mb-2.5 text-3xl md:text-4xl font-bold">Airman Data Test</h1>
+                <p class="text-slate-600 text-center mb-8 text-sm">Envision test data</p>
 
                 <div id="airman-data-loading" class="text-center py-8">
-                    <p class="text-gray-600 text-lg">Loading data...</p>
+                    <p class="text-slate-600 text-lg">Loading data...</p>
                 </div>
 
-                <div id="airman-data-error" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+                <div id="airman-data-error" class="hidden mt-5 p-4 rounded-md bg-red-50 border-l-4 border-red-600 animate-fade-in">
                     <p id="airman-data-error-text" class="text-red-800 font-semibold text-center"></p>
                 </div>
 
-                <div id="airman-data-table-container" class="hidden overflow-auto max-h-[60vh] border border-gray-200 rounded-lg">
+                <div id="airman-data-table-container" class="hidden overflow-auto max-h-[60vh] border border-slate-300 rounded-md shadow-sm">
                     <table id="airman-data-table" class="w-full border-collapse">
                         <thead>
-                            <tr id="airman-data-table-header" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                            <tr id="airman-data-table-header" class="bg-blue-800 text-white">
                                 <!-- Headers will be populated dynamically -->
                             </tr>
                         </thead>
