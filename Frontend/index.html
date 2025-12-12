@@ -67,6 +67,16 @@
         .model-content.active {
             display: block;
         }
+        #airman-data-table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        #airman-data-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
@@ -94,11 +104,18 @@
                 House Price Predictor
             </a>
         </nav>
+
+        <h2 class="text-gray-800 text-2xl font-bold mb-6 mt-8">Envision Datasets</h2>
+        <nav>
+            <a href="#" data-model="airman-data" class="sidebar-link block p-4 mb-3 rounded-xl font-semibold hover:bg-gray-100">
+                Airman Data Test
+            </a>
+        </nav>
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex justify-center items-center">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl w-full">
+    <div class="flex-1 flex justify-center items-start overflow-y-auto">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full my-auto">
 
             <!-- Air Force Retention Content -->
             <div id="retention-content" class="model-content active">
@@ -404,6 +421,33 @@
                             House Sales in King County, WA 2014
                         </a>
                     </p>
+                </div>
+            </div>
+
+            <!-- Airman Data Test Content -->
+            <div id="airman-data-content" class="model-content">
+                <h1 class="text-gray-800 text-center mb-2.5 text-3xl md:text-4xl font-bold">Airman Data Test</h1>
+                <p class="text-gray-600 text-center mb-8 text-sm">Envision test data</p>
+
+                <div id="airman-data-loading" class="text-center py-8">
+                    <p class="text-gray-600 text-lg">Loading data...</p>
+                </div>
+
+                <div id="airman-data-error" class="hidden mt-5 p-2 rounded-xl bg-red-50 border-2 border-red-500 fade-in">
+                    <p id="airman-data-error-text" class="text-red-800 font-semibold text-center"></p>
+                </div>
+
+                <div id="airman-data-table-container" class="hidden overflow-auto max-h-[60vh] border border-gray-200 rounded-lg">
+                    <table id="airman-data-table" class="w-full border-collapse">
+                        <thead>
+                            <tr id="airman-data-table-header" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                                <!-- Headers will be populated dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody id="airman-data-table-body">
+                            <!-- Data rows will be populated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

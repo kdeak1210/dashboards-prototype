@@ -580,3 +580,70 @@ retentionSubmitBtn.addEventListener('click', async () => {
         retentionSubmitBtn.textContent = 'Predict Retention';
     }
 });
+
+// Airman Data Test - Fetch and display dataset
+async function loadAirmanData() {
+    const loadingDiv = document.getElementById('airman-data-loading');
+    const errorDiv = document.getElementById('airman-data-error');
+    const errorText = document.getElementById('airman-data-error-text');
+    const tableContainer = document.getElementById('airman-data-table-container');
+    const tableHeader = document.getElementById('airman-data-table-header');
+    const tableBody = document.getElementById('airman-data-table-body');
+
+    try {
+        loadingDiv.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+        tableContainer.classList.add('hidden');
+
+        const response = await fetch(`${API_BASE_URL}/envision-dataset?rid=1`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.length === 0) {
+            throw new Error('No data found');
+        }
+
+        // Create table headers from the first object's keys
+        const headers = Object.keys(data[0]);
+        tableHeader.innerHTML = headers.map(header =>
+            `<th class="px-4 py-3 text-left font-semibold text-sm uppercase">${header.replace(/_/g, ' ')}</th>`
+        ).join('');
+
+        // Create table rows
+        tableBody.innerHTML = data.map((row, index) => {
+            const bgColor = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+            return `
+                <tr class="${bgColor} hover:bg-indigo-50 transition-colors">
+                    ${headers.map(header =>
+                        `<td class="px-4 py-3 text-sm text-gray-700 border-b border-gray-200">${row[header]}</td>`
+                    ).join('')}
+                </tr>
+            `;
+        }).join('');
+
+        // Show table and hide loading
+        loadingDiv.classList.add('hidden');
+        tableContainer.classList.remove('hidden');
+
+    } catch (error) {
+        console.error('Error loading airman data:', error);
+        loadingDiv.classList.add('hidden');
+        errorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at ${API_BASE_URL}`;
+        errorDiv.classList.remove('hidden');
+    }
+}
+
+// Load data when airman-data link is clicked
+const sidebarLinksUpdated = document.querySelectorAll('.sidebar-link');
+sidebarLinksUpdated.forEach(link => {
+    link.addEventListener('click', () => {
+        const modelType = link.getAttribute('data-model');
+        if (modelType === 'airman-data') {
+            loadAirmanData();
+        }
+    });
+});

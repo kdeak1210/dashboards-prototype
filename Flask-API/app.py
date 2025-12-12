@@ -138,5 +138,19 @@ def predict_retention():
         'non_retention_probability': probabilities[0]
     })
 
+# API call to fetch Air Force retention dataset
+@app.route('/envision-dataset', methods=['GET'])
+def get_envision_dataset():
+    rid = request.args.get('rid')
+
+    # Read CSV data
+    csv_path = os.path.join(BASE_DIR, 'models/airforce_retention', 'airforce_retention_data.csv')
+    df = pd.read_csv(csv_path)
+
+    # Convert DataFrame to JSON format
+    csv_data = df.to_dict(orient='records')
+
+    return jsonify(csv_data)
+
 if __name__ == '__main__':
     app.run(debug=True)
