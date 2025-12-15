@@ -581,69 +581,143 @@ retentionSubmitBtn.addEventListener('click', async () => {
     }
 });
 
-// Airman Data Test - Fetch and display dataset
-async function loadAirmanData() {
-    const loadingDiv = document.getElementById('airman-data-loading');
-    const errorDiv = document.getElementById('airman-data-error');
-    const errorText = document.getElementById('airman-data-error-text');
-    const tableContainer = document.getElementById('airman-data-table-container');
-    const tableHeader = document.getElementById('airman-data-table-header');
-    const tableBody = document.getElementById('airman-data-table-body');
+// Envision Dataset Query Elements
+const datasetRidInput = document.getElementById('dataset-rid');
+const rowLimitInput = document.getElementById('row-limit');
+const rowLimitValue = document.getElementById('row-limit-value');
+const queryDatasetBtn = document.getElementById('query-dataset-btn');
+const queryLocalTestBtn = document.getElementById('query-local-test-btn');
+const datasetLoadingDiv = document.getElementById('dataset-loading');
+const datasetErrorDiv = document.getElementById('dataset-error');
+const datasetErrorText = document.getElementById('dataset-error-text');
+const datasetTableContainer = document.getElementById('dataset-table-container');
+const datasetTableHeader = document.getElementById('dataset-table-header');
+const datasetTableBody = document.getElementById('dataset-table-body');
+
+// Update row limit display
+rowLimitInput.addEventListener('input', (e) => {
+    rowLimitValue.textContent = e.target.value;
+});
+
+// Build table from data
+function buildDataTable(data) {
+    if (data.length === 0) {
+        throw new Error('No data found in dataset');
+    }
+
+    // Create table headers from the first object's keys
+    const headers = Object.keys(data[0]);
+    datasetTableHeader.innerHTML = headers.map(header =>
+        `<th class="px-4 py-3 text-left font-semibold text-sm uppercase">${header.replace(/_/g, ' ')}</th>`
+    ).join('');
+
+    // Create table rows
+    datasetTableBody.innerHTML = data.map((row, index) => {
+        const bgColor = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+        return `
+            <tr class="${bgColor} hover:bg-indigo-50 transition-colors">
+                ${headers.map(header =>
+                    `<td class="px-4 py-3 text-sm text-gray-700 border-b border-gray-200">${row[header] !== null ? row[header] : ''}</td>`
+                ).join('')}
+            </tr>
+        `;
+    }).join('');
+
+    // Show table
+    datasetTableContainer.classList.remove('hidden');
+}
+
+// Query dataset function
+async function queryDataset() {
+    const rid = datasetRidInput.value.trim();
+    const rowLimit = parseInt(rowLimitInput.value);
+
+    if (!rid) {
+        datasetErrorText.textContent = 'Please enter a Dataset RID';
+        datasetErrorDiv.classList.remove('hidden');
+        return;
+    }
+
+    queryDatasetBtn.disabled = true;
+    queryDatasetBtn.textContent = 'Querying...';
+    datasetLoadingDiv.classList.remove('hidden');
+    datasetErrorDiv.classList.add('hidden');
+    datasetTableContainer.classList.add('hidden');
 
     try {
-        loadingDiv.classList.remove('hidden');
-        errorDiv.classList.add('hidden');
-        tableContainer.classList.add('hidden');
-
-        const response = await fetch(`${API_BASE_URL}/envision-dataset?rid=1`);
+        const response = await fetch(`${API_BASE_URL}/envision-dataset?rid=${encodeURIComponent(rid)}&rowLimit=${rowLimit}`);
 
         if (!response.ok) {
+            if (response.status === 404 || response.status === 403) {
+                throw new Error('Envision dataset was not found or you have insufficient permissions');
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const contentType = response.headers.get('content-type');
 
-        if (data.length === 0) {
-            throw new Error('No data found');
+        // Check if response is JSON (data found)
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            buildDataTable(data);
+        } else {
+            // Non-JSON response, likely an error
+            throw new Error('Envision dataset was not found or you have insufficient permissions');
         }
 
-        // Create table headers from the first object's keys
-        const headers = Object.keys(data[0]);
-        tableHeader.innerHTML = headers.map(header =>
-            `<th class="px-4 py-3 text-left font-semibold text-sm uppercase">${header.replace(/_/g, ' ')}</th>`
-        ).join('');
-
-        // Create table rows
-        tableBody.innerHTML = data.map((row, index) => {
-            const bgColor = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
-            return `
-                <tr class="${bgColor} hover:bg-indigo-50 transition-colors">
-                    ${headers.map(header =>
-                        `<td class="px-4 py-3 text-sm text-gray-700 border-b border-gray-200">${row[header]}</td>`
-                    ).join('')}
-                </tr>
-            `;
-        }).join('');
-
-        // Show table and hide loading
-        loadingDiv.classList.add('hidden');
-        tableContainer.classList.remove('hidden');
-
     } catch (error) {
-        console.error('Error loading airman data:', error);
-        loadingDiv.classList.add('hidden');
-        errorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at ${API_BASE_URL}`;
-        errorDiv.classList.remove('hidden');
+        console.error('Error querying dataset:', error);
+        datasetErrorText.textContent = error.message;
+        datasetErrorDiv.classList.remove('hidden');
+    } finally {
+        datasetLoadingDiv.classList.add('hidden');
+        queryDatasetBtn.disabled = false;
+        queryDatasetBtn.textContent = 'Query Dataset';
     }
 }
 
-// Load data when airman-data link is clicked
-const sidebarLinksUpdated = document.querySelectorAll('.sidebar-link');
-sidebarLinksUpdated.forEach(link => {
-    link.addEventListener('click', () => {
-        const modelType = link.getAttribute('data-model');
-        if (modelType === 'airman-data') {
-            loadAirmanData();
+// Query local test dataset function
+async function queryLocalTest() {
+    queryLocalTestBtn.disabled = true;
+    queryLocalTestBtn.textContent = 'Querying...';
+    datasetLoadingDiv.classList.remove('hidden');
+    datasetErrorDiv.classList.add('hidden');
+    datasetTableContainer.classList.add('hidden');
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/local-retention-dataset`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('Local retention dataset was not found');
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    });
-});
+
+        const contentType = response.headers.get('content-type');
+
+        // Check if response is JSON (data found)
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            buildDataTable(data);
+        } else {
+            // Non-JSON response, likely an error
+            throw new Error('Local retention dataset was not found');
+        }
+
+    } catch (error) {
+        console.error('Error querying local test dataset:', error);
+        datasetErrorText.textContent = error.message;
+        datasetErrorDiv.classList.remove('hidden');
+    } finally {
+        datasetLoadingDiv.classList.add('hidden');
+        queryLocalTestBtn.disabled = false;
+        queryLocalTestBtn.textContent = 'Query Local Test';
+    }
+}
+
+// Query dataset button click handler
+queryDatasetBtn.addEventListener('click', queryDataset);
+
+// Query local test button click handler
+queryLocalTestBtn.addEventListener('click', queryLocalTest);

@@ -1,10 +1,20 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
+from io import StringIO
+import os
+import requests
 import pickle
 import joblib
 import json
 import os
 import pandas as pd # Example for data handling
+
+# Load environment variable from .env file
+load_dotenv()
+
+# Access Envision Token from key name defined in .env file
+ENVISION_TOKEN = os.getenv("ENVISION_TOKEN")
 
 # Get the absolute path of the current file's directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -88,11 +98,6 @@ retention_scaler = joblib.load(retention_scaler_path)
 retention_encoders = joblib.load(retention_encoders_path)
 retention_feature_info = joblib.load(retention_feature_info_path)
 
-# retention_model = pickle.load(open(retention_model_path, 'rb'))
-# retention_scaler = pickle.load(open(retention_scaler_path, 'rb'))
-# retention_encoders = pickle.load(open(retention_encoders_path, 'rb'))
-# retention_feature_info = pickle.load(open(retention_feature_info_path, 'rb'))
-
 # Prepare input data
 # airman_data = {
 #     'age': 28,
@@ -138,10 +143,35 @@ def predict_retention():
         'non_retention_probability': probabilities[0]
     })
 
-# API call to fetch Air Force retention dataset
+# Envision Section - testinc capabilities for future development tasks
+hostname = 'https://envision.af.mil'
+
+# API call to query an Envision dataset
 @app.route('/envision-dataset', methods=['GET'])
 def get_envision_dataset():
     rid = request.args.get('rid')
+    row_limit = request.args.get('rowLimit')
+    url = f"{hostname}/api/v2/datasets/{rid}/readTable?format=CSV&rowLimit={row_limit}"
+
+    # Format Authorization header as a bearer token
+    headers = {
+        "Authorization": f"Bearer {ENVISION_TOKEN}"
+    }
+
+    # GET Request to Envision API
+    try:
+        response = requests.get(url, headers=headers, verify=False)
+        response.raise_for_status()
+        
+        df = pd.read_csv(StringIO(response.text))
+        return df.to_json(orient='records', indent=4)
+    
+    except Exception as e:
+        return jsonify({"error": str(err)})
+
+# API call to fetch Air Force retention dataset
+@app.route('/local-retention-dataset', methods=['GET'])
+def get_local_retention_dataset(): 
 
     # Read CSV data
     csv_path = os.path.join(BASE_DIR, 'models/airforce_retention', 'airforce_retention_data.csv')
