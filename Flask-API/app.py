@@ -164,10 +164,12 @@ def get_envision_dataset():
         response.raise_for_status()
         
         df = pd.read_csv(StringIO(response.text))
-        return df.to_json(orient='records', indent=4)
+        
+        csv_data = df.to_json(orient="records", indent=4)
+        return jsonify(csv_data)
     
     except Exception as e:
-        return jsonify({"error": str(err)})
+        return jsonify({"error": str(e)})
 
 # API call to fetch Air Force retention dataset
 @app.route('/local-retention-dataset', methods=['GET'])

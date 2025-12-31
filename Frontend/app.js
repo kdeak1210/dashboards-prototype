@@ -659,7 +659,7 @@ async function queryDataset() {
         // Check if response is JSON (data found)
         if (contentType && contentType.includes('application/json')) {
             const data = await response.json();
-            buildDataTable(data);
+            buildDataTable(JSON.parse(data));
         } else {
             // Non-JSON response, likely an error
             throw new Error('Envision dataset was not found or you have insufficient permissions');
@@ -672,7 +672,7 @@ async function queryDataset() {
     } finally {
         datasetLoadingDiv.classList.add('hidden');
         queryDatasetBtn.disabled = false;
-        queryDatasetBtn.textContent = 'Query Dataset';
+        queryDatasetBtn.textContent = 'Query Envision Dataset';
     }
 }
 
@@ -721,3 +721,84 @@ queryDatasetBtn.addEventListener('click', queryDataset);
 
 // Query local test button click handler
 queryLocalTestBtn.addEventListener('click', queryLocalTest);
+
+// Ticket Assignment Group Elements
+const ticketNumberInput = document.getElementById('ticket-number');
+const businessApplicationInput = document.getElementById('business-application');
+const categoryInput = document.getElementById('category');
+const shortDescriptionInput = document.getElementById('short-description');
+const descriptionTextarea = document.getElementById('description');
+const ticketAssignmentSubmitBtn = document.getElementById('ticket-assignment-submit-btn');
+const ticketAssignmentResultContainer = document.getElementById('ticket-assignment-result-container');
+const predictedAssignmentGroup = document.getElementById('predicted-assignment-group');
+const predictionConfidence = document.getElementById('prediction-confidence');
+const ticketAssignmentErrorContainer = document.getElementById('ticket-assignment-error-container');
+const ticketAssignmentErrorText = document.getElementById('ticket-assignment-error-text');
+const ticketAssignmentValidationError = document.getElementById('ticket-assignment-validation-error');
+
+// Submit ticket assignment prediction
+ticketAssignmentSubmitBtn.addEventListener('click', async () => {
+    const ticketNumber = ticketNumberInput.value.trim();
+    const businessApplication = businessApplicationInput.value.trim();
+    const category = categoryInput.value.trim();
+    const shortDescription = shortDescriptionInput.value.trim();
+    const description = descriptionTextarea.value.trim();
+
+    // Hide all message containers first
+    ticketAssignmentValidationError.classList.add('hidden');
+    ticketAssignmentResultContainer.classList.add('hidden');
+    ticketAssignmentErrorContainer.classList.add('hidden');
+
+    // Validate that all fields are filled
+    if (!ticketNumber || !businessApplication || !category || !shortDescription || !description) {
+        ticketAssignmentValidationError.classList.remove('hidden');
+        return;
+    }
+
+    ticketAssignmentSubmitBtn.disabled = true;
+    ticketAssignmentSubmitBtn.textContent = 'Predicting...';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/predict_ticket_assignment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tickets: [
+                    {
+                        "Ticket_Number": ticketNumber,
+                        "Business Application": businessApplication,
+                        "Category": category,
+                        "Short description": shortDescription,
+                        "Description": description
+                    }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        // Display the prediction results
+        if (result.predictions && result.predictions.length > 0) {
+            const prediction = result.predictions[0];
+            predictedAssignmentGroup.textContent = prediction.Predicted_Assignment_Group;
+            predictionConfidence.textContent = (prediction.Confidence * 100).toFixed(2) + '%';
+            ticketAssignmentResultContainer.classList.remove('hidden');
+        } else {
+            throw new Error('No prediction data returned');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        ticketAssignmentErrorText.textContent = `Error: ${error.message}. Make sure the Flask API is running at ${API_BASE_URL}`;
+        ticketAssignmentErrorContainer.classList.remove('hidden');
+    } finally {
+        ticketAssignmentSubmitBtn.disabled = false;
+        ticketAssignmentSubmitBtn.textContent = 'Predict Assignment Group';
+    }
+});

@@ -12,6 +12,14 @@ python -m venv .venv
 .venv\Scripts\activate
 ```
 
+###### Add Envision access token for test development purposes
+Make sure you are in the Flask-API folder, and create a file called .env
+This file will store environment variables which can include personal access tokens for running the app
+On line 1, add your envision token in this format then save the file:
+```
+ENVISION_TOKEN={your token without braces}
+```
+
 ###### Install dependencies
 Make sure you are in the virtual environment
 ```
