@@ -171,6 +171,31 @@ def get_envision_dataset():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+# API call to predict ticket assignment using Envision hosted model
+@app.route('/predict_ticket_assignment', methods=['POST'])
+def predict_ticket_assignment():
+    deployment_rid = "placeholder"
+    url = f"{hostname}/foundry-ml-live/api/inference/transform/{deployment_rid}/v2"
+
+    # Get JSON body from incoming request
+    data = request.get_json(force=True)
+
+    # Format Authorization header as a bearer token
+    headers = {
+        "Authorization": f"Bearer {ENVISION_TOKEN}"
+    }
+
+    # POST Request to Envision API
+    try:
+        response = requests.post(url, headers=headers, json=data, verify=False)
+        response.raise_for_status()
+
+        # Return the exact same response from Envision
+        return jsonify(response.json())
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 # API call to fetch Air Force retention dataset
 @app.route('/local-retention-dataset', methods=['GET'])
 def get_local_retention_dataset(): 
