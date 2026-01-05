@@ -20,6 +20,16 @@ sidebarLinks.forEach(link => {
         modelContents.forEach(content => content.classList.remove('active'));
         document.getElementById(`${modelType}-content`).classList.add('active');
 
+        // Show dataset table when switching to dataset view if it has data
+        if (modelType === 'envision-dataset') {
+            const datasetTableContainer = document.getElementById('dataset-table-container');
+            const datasetTableBody = document.getElementById('dataset-table-body');
+            // Only show table if it has data rows
+            if (datasetTableContainer && datasetTableBody && datasetTableBody.children.length > 0) {
+                datasetTableContainer.classList.remove('hidden');
+            }
+        }
+
         // Resize chart when switching to iris model to fix display bug
         if (modelType === 'iris' && irisChart) {
             setTimeout(() => irisChart.resize(), 0);
